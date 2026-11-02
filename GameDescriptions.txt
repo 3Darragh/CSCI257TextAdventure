@@ -1,0 +1,30 @@
+The Castle Grounds
+The castle stands above a large grassy area with a stone path. The path leads west to the stables and south to the living quarters.
+
+You can go west to the stables or south to the living quarters.
+#
+The Stables
+The stables smell of hay and wood, and a horse stands in its stall. Supplies like food and riding gear are stored along the walls.
+
+The castle grounds are to the east, the dining hall is to the south, and the spire is upstairs.
+#
+The Living Quarters
+The living quarters have a long table, a few chairs, and personal belongings around the room. The stone walls make the room feel cool and quiet.
+
+You can go north to the castle grounds or west to the dining hall.
+#
+The Dining Hall
+A long table and heavy chairs fill the dining hall. Candles and old banners decorate the stone walls.
+
+The stables are to the north, the living quarters are to the east, and the throne room is to the south.
+#
+The Spire
+The spire is a tall, narrow room where the wind blows through the open windows. A small platform offers a view of the castle grounds below.
+
+You can go back down the stairs to the stables.
+#
+The Throne Room
+The throne room has stone walls, dark banners, and a large throne at the far end. A book and a crown sit nearby, lit by sunlight from the high windows.
+
+You can go north to the dining hall.
+#

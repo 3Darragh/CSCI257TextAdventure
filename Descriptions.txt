@@ -1,0 +1,48 @@
+Living Room
+The small living room contains a couch, coffee table, and two
+armchairs. Pictures of various cousins adorn the walls along
+with two of your aunt's wretched attempts at oil painting. You
+can't help but notice that the carpet could use a good
+vacuuming.
+
+Doorways lead west to your father's office, north to your
+bedroom, and east to the kitchen.
+#
+Bedroom
+This is your domain and has been since your family moved here
+when you were six. A nightstand with a Superman lamp sits next
+to your twin bed. Posters of various anime characters cover one
+wall. A pile of laundry, slowly but surely attaining sentience,
+occupies the far corner.
+
+The door to the attic is in the ceiling above the pile of
+clothes. You can return south to the living room.
+#
+Office
+A converted office was once a bedroom, with beige walls and a 
+carpeted floor. It has one desk, a computer, an office chair, 
+and two opposing chairs.
+
+The door to the living room is to the east.
+#
+Kitchen
+The kitchen sits in the corner of the house. between the living 
+room and the garage. It has been redone with modern appliances like 
+a electric stovetop. It has an island for everyone to eat at.
+
+You can return to the living room to the west, or head south to
+the garage.
+#
+Garage
+The garage is dirty and an old unfinished project car takes up most 
+of the space. Oil and grease marks stain the floor and tools are
+spread halfhazardly across the workbench.
+
+The kitchen is to the north.
+#
+Attic
+The attic is filled with dusty old boxes and holiday decorations. One 
+single lightbulb illumonates the entire floor from the middle of the
+room. 
+
+You can climb back down to the bedroom.

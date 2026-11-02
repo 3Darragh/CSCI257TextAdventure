@@ -1,0 +1,16 @@
+// 1: Title: Castle Escape.
+
+// 2: Map: Spire
+// 			||
+// 		Stables   ==    Grounds
+//			||			    ||
+//		Dining Hall == Living Quarters
+//			||
+//		Throne Room
+
+// 3: The ultimate goal is to reach the throne room and get the king's crown, and then return it to him.
+
+// 4: The player must receive different items found in different areas. The the noble in the living quarters needs a book in the spire, the
+// guard by the spire needs food from the dining hall, and the noble then gives you the key to the throne room once he gets his book. Once you 
+// reach the room and grab the key, you then need to exit to the grounds and return it to the king. The NPCs will include the scholar, the guard, 
+// the king, and the watchman.
