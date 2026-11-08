@@ -7,20 +7,17 @@ public class Tool extends Item {
 
     @Override
     public String use(Room currentRoom) {
-        Room upRoom = currentRoom.getExit(Direction.UP);
+        Room attic = currentRoom.getExit(Direction.UP);
 
-        // If there is no room to the west.
-        if (upRoom == null) {
+        if (attic == null || !attic.getName().equals("Attic: ")) {
             return "You cannot use that here.";
         }
 
-        // Only locked room up of another is the attic.
-        if (upRoom.isRoomLocked()) {
-            upRoom.unlockRoom();
+        if (attic.isRoomLocked()) {
+            attic.unlockRoom();
             return "You unlocked the Attic.";
         }
 
-        // Key was already used.
         return "The tool was already used.";
     }
 }

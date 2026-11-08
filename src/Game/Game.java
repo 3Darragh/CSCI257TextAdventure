@@ -1,20 +1,17 @@
 package Game;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Scanner;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Game {
 	public static HashMap<String, String> roomDescriptions = new HashMap<>();
 	public static Room currentRoom;
-	private static HashMap<String, Item> inventory = new HashMap<>();
-	private static ArrayList<Room> world = World.createRoomArrayList();
+	public static HashMap<String, Item> inventory = new HashMap<>();
 		
 	public static void runGame() {
 		Scanner scanner = new Scanner(System.in);
@@ -43,15 +40,35 @@ public class Game {
 			if (splitInput[0].equals("take") && splitInput.length > 1) {
 				takeItem(splitInput[1]);
 			}
+
+			// Open an item.
+			if (splitInput[0].equals("open") && splitInput.length > 1) {
+				System.out.println(openItem(splitInput[1]));
+			}
+
+			// Read an item.
+			if (splitInput[0].equals("read") && splitInput.length > 1) {
+				System.out.println(readItem(splitInput[1]));
+			}
+
+			// Close an item.
+			if (splitInput[0].equals("close") && splitInput.length > 1) {
+				System.out.println(closeItem(splitInput[1]));
+			}
+
+			// Use an item.
+			if (splitInput[0].equals("use") && splitInput.length > 1) {
+				System.out.println(useItem(splitInput[1]));
+			}
 			
 			// Save game.
 			if (splitInput[0].equals("save")) {
-				saveGame();
+				System.out.println(saveGame());
 			}
 			
 			// Load game.
 			if (splitInput[0].equals("load")) {
-				loadGame();
+				System.out.println(loadGame());
 			}
 		}
 		
@@ -88,32 +105,68 @@ public class Game {
 			break;
 		
 		default:
-			return "Unknown direction: " + pDirection + ".";
+			return "";
 		}
 		
 	    if (currentRoom.getExit(direction) != null) {
-	        currentRoom = currentRoom.getExit(direction);
-	        return "You moved " + pDirection + ".";
+			if (currentRoom.getExit(direction).isRoomLocked() == false) {
+				currentRoom = currentRoom.getExit(direction);
+				return "You moved " + pDirection + ".";
+			} else {
+				return "The door to that room is locked.";
+			}
 	    } else {
 	        return "You cannot move that way.";
 	    }
 	}
 	
 	// Take an item from currentRoom to inventory.
-	public static String takeItem(String itemName) {
-	    Item item = currentRoom.getItem(itemName);
+	public static String takeItem(String pItemName) {
+	    Item item = currentRoom.getItem(pItemName);
 
 	    if (item == null) {
-	        return "Could not find the " + itemName;
+	        return "Could not find the " + pItemName;
 	    } else if (item.isHeavy()) {
 	        return "You cannot lift the " + item.getName();
 	    } else {
-	        inventory.put(item.getName(), item);
-	        currentRoom.removeItem(itemName);
+	        addInventoryItem(item);
+	        currentRoom.removeItem(pItemName);
 	        return "You took " + item.getName() + ".";
 	    }
 	}
-	
+
+	public static void addInventoryItem(Item pItem) {
+		inventory.put(pItem.getName(), pItem);
+	}
+
+	public static String useItem(String pItemName) {
+		Item item = inventory.get(pItemName);
+		if (item == null) {
+			return "You do not have the " + pItemName + ".";
+		}
+		return item.use(currentRoom);
+	}
+
+	public static String openItem(String pItemName) {
+		Item item = getActionItem(pItemName);
+		return item == null ? "Could not find the " + pItemName + "." : item.open();
+	}
+
+	public static String readItem(String pItemName) {
+		Item item = getActionItem(pItemName);
+		return item == null ? "Could not find the " + pItemName + "." : item.read();
+	}
+
+	public static String closeItem(String pItemName) {
+		Item item = getActionItem(pItemName);
+		return item == null ? "Could not find the " + pItemName + "." : item.close();
+	}
+
+	private static Item getActionItem(String pItemName) {
+		Item item = currentRoom.getItem(pItemName);
+		return item == null ? inventory.get(pItemName) : item;
+	}
+
 	// Returns the inventory in text for the GUI.
 	public static String getInventoryText() {
 	    if (inventory.isEmpty()) {
@@ -132,7 +185,7 @@ public class Game {
 	// Gets the descriptions from Descriptions.txt and adds them to roomDescriptions.
 	public static void loadRoomDescriptions() {
 		try {
-			Scanner fileScanner = new Scanner(new File("GameDescriptions.txt"));
+			Scanner fileScanner = new Scanner(new File("Descriptions.txt"));
 			fileScanner.useDelimiter("#");
 			
 			// While there is a next line.
@@ -151,16 +204,18 @@ public class Game {
 			ex.printStackTrace();
 		}
 	}
-
+	
 	// Saves the game.
 	public static String saveGame() {
-		File saveFile = new File("saveFile.sav");
+		if (currentRoom == null) {
+			return "Could not save game: no current room.";
+		}
 
+		File saveFile = new File("saveFile.sav");
 		try (ObjectOutputStream outputStream =
 				new ObjectOutputStream(new FileOutputStream(saveFile))) {
 			outputStream.writeObject(currentRoom);
 			outputStream.writeObject(inventory);
-			outputStream.writeObject(world);
 			return "Game saved.";
 		} catch (Exception ex) {
 			return "Could not save game: " + ex.getMessage();
@@ -170,21 +225,22 @@ public class Game {
 	// Loads the game.
 	public static String loadGame() {
 		File saveFile = new File("saveFile.sav");
-
 		try (ObjectInputStream inputStream =
 				new ObjectInputStream(new FileInputStream(saveFile))) {
-			currentRoom = (Room) inputStream.readObject();
-			inventory = (HashMap<String, Item>) inputStream.readObject();
-			world = (ArrayList<Room>) inputStream.readObject();
+			Room loadedRoom = (Room) inputStream.readObject();
+			@SuppressWarnings("unchecked")
+			HashMap<String, Item> loadedInventory =
+					(HashMap<String, Item>) inputStream.readObject();
+
+			currentRoom = loadedRoom;
+			inventory = loadedInventory;
 			return "Game loaded.";
 		} catch (Exception ex) {
 			return "Could not load game: " + ex.getMessage();
 		}
 	}
 	
-	public static void main(String[] args) {
-		loadRoomDescriptions();
-		currentRoom = World.buildWorld();
-		runGame();
+	public static void main(String[] pArgs) {
+		GameGUI.main(pArgs);
 	}
 }

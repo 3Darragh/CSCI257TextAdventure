@@ -75,6 +75,12 @@ public class World {
 			// Set Exits.
 		attic.setExit(bedRoom, Direction.DOWN);
 
+			// Create Items.
+		Safe safe = new Safe();
+
+			// Add items.
+		attic.addItem(safe.getName(), safe);
+
 			// Set Locks.
 		attic.lockRoom();
 		

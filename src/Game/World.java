@@ -6,42 +6,26 @@ public class World {
 	
 	public static Room buildWorld() {
 		
-		Room grounds = new Room(
-				"The Castle Grounds: "
-		);
-		
-		Room stables = new Room(
-				"The Stables: "
-		);
-		
-		Room quarters = new Room(
-				"The Living Quarters: "
-		);
-		
-		Room hall = new Room(
-				"The Dining Hall: "
-		);
-		
-		Room spire = new Room(
-				"The Spire: "
-		);
-		
-		Room throne = new Room(
-				"The Throne Room: "
-		);
+		Room grounds = new Room("The Castle Grounds: ");
+		Room stables = new Room("The Stables: ");
+		Room quarters = new Room("The Living Quarters: ");
+		Room hall = new Room("The Dining Hall: ");
+		Room spire = new Room(	"The Spire: ");
+		Room throne = new Room(	"The Throne Room: ");
 		
 		// The Grounds.
 		grounds.setExit(stables, Direction.WEST);
 		grounds.setExit(quarters, Direction.SOUTH);
 		
-		
 		// Stables.
+
+			// Set Exits.
 		stables.setExit(grounds, Direction.EAST);
 		stables.setExit(hall, Direction.SOUTH);
 		stables.setExit(spire, Direction.UP);
 		
-		// Horse item.
-		Item horse = new Item("horse", Item.gHeavy);
+			// Horse item.
+		Item horse = new Item("horse", Item.g_HEAVY);
 		stables.addItem(horse.getName(), horse);
 		
 		// Quarters.
@@ -57,18 +41,18 @@ public class World {
 		spire.setExit(stables, Direction.DOWN);
 		
 		// Book item.
-		Item book = new Item("book", Item.gNotHeavy);
+		Item book = new Item("book", Item.g_NOTHEAVY);
 		throne.addItem(book.getName(), book);
 		
 		// Throne.
 		throne.setExit(hall, Direction.NORTH);
 		
 		// Crown item.
-		Item crown = new Item("crown", Item.gNotHeavy);
+		Item crown = new Item("crown", Item.g_NOTHEAVY);
 		throne.addItem(crown.getName(), crown);
 		
 		// Throne item.
-		Item throneChair = new Item("throne", Item.gHeavy);
+		Item throneChair = new Item("throne", Item.g_NOTHEAVY);
 		throne.addItem(throneChair.getName(), throneChair);
 		
 		// Set starting room to living room.

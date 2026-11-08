@@ -1,8 +1,8 @@
 
 package Game;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class GameGUI extends JFrame {
 
@@ -15,7 +15,7 @@ public class GameGUI extends JFrame {
     public GameGUI() {
 
         // 1. Set up the window
-        setTitle("Crown Retrieval");
+        setTitle("Text Adventure");
         setSize(700, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -38,12 +38,25 @@ public class GameGUI extends JFrame {
 
         command.addActionListener(e -> {
             String input = command.getText().toLowerCase().trim();
+            input = input.replaceAll("\\bthe\\s+", "");
 
             if (input.startsWith("go ")) {
                 output.setText(Game.move(input.substring(3)));
 
             } else if (input.startsWith("take ")) {
                 output.setText(Game.takeItem(input.substring(5)));
+
+            } else if (input.startsWith("open ")) {
+                output.setText(Game.openItem(input.substring(5)));
+
+            } else if (input.startsWith("read ")) {
+                output.setText(Game.readItem(input.substring(5)));
+
+            } else if (input.startsWith("close ")) {
+                output.setText(Game.closeItem(input.substring(6)));
+
+            } else if (input.startsWith("use ")) {
+                output.setText(Game.useItem(input.substring(4)));
 
             } else if (input.equals("inventory")) {
                 output.setText("You checked your inventory.");
@@ -52,9 +65,9 @@ public class GameGUI extends JFrame {
                 dispose();
                 return;
             } else if (input.equals("save")) {
-                output.setText(Game.saveGame());
+            	output.setText(Game.saveGame());
             } else if (input.equals("load")) {
-                output.setText(Game.loadGame());
+            	output.setText(Game.loadGame());
             } else if (!input.isEmpty()) {
                 output.setText("Unknown command.");
             }
@@ -105,7 +118,7 @@ public class GameGUI extends JFrame {
 
         // 9. Add everything to the window
         add(center, BorderLayout.CENTER);
-        add(bottom, BorderLayout.SOUTH        );
+        add(bottom, BorderLayout.SOUTH);
 
         // 10. Load the starting room description
         description.setText(Game.currentRoom.getDescription());

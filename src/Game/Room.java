@@ -8,7 +8,10 @@ public class Room implements Serializable {
 
 	private String name;
 	private ArrayList<Room> roomList = new ArrayList<Room>();
+	private boolean isLocked = false;
+
 	public HashMap<String, Item> itemList = new HashMap<>();
+
 	
 	public Room(String pName) {
 		name = pName;
@@ -59,6 +62,18 @@ public class Room implements Serializable {
 	
 	public ArrayList<Room> getRoomList() {
 		return roomList;
+	}
+
+	public boolean isRoomLocked() {
+		return isLocked;
+	}
+
+	public void lockRoom() {
+		isLocked = true;
+	}
+
+	public void unlockRoom() {
+		isLocked = false;
 	}
 	
 	public String toString() {

@@ -38,12 +38,22 @@ public class GameGUI extends JFrame {
 
         command.addActionListener(e -> {
             String input = command.getText().toLowerCase().trim();
+            input = input.replaceAll("\\bthe\\s+", "");
 
             if (input.startsWith("go ")) {
                 output.setText(Game.move(input.substring(3)));
 
             } else if (input.startsWith("take ")) {
                 output.setText(Game.takeItem(input.substring(5)));
+
+            } else if (input.startsWith("open ")) {
+                output.setText(Game.openItem(input.substring(5)));
+
+            } else if (input.startsWith("read ")) {
+                output.setText(Game.readItem(input.substring(5)));
+
+            } else if (input.startsWith("close ")) {
+                output.setText(Game.closeItem(input.substring(6)));
 
             } else if (input.startsWith("use ")) {
                 output.setText(Game.useItem(input.substring(4)));

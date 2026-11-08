@@ -26,6 +26,7 @@ public class Item implements Serializable {
 		return isHeavy;
 	}
 	
+	@Override 
 	public String toString() {
 		String str = name;
 		return str;
@@ -33,5 +34,17 @@ public class Item implements Serializable {
 
 	public String use(Room currentRoom) {
 		return "You cannot use this item.";
+	}
+
+	public String open() {
+		return "You cannot open this item.";
+	}
+
+	public String close() {
+		return "You cannot close this item.";
+	}
+
+	public String read() {
+		return "You cannot read this item.";
 	}
 }

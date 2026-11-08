@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class Game {
 	public static HashMap<String, String> roomDescriptions = new HashMap<>();
 	public static Room currentRoom;
-	private static HashMap<String, Item> inventory = new HashMap<>();
+	public static HashMap<String, Item> inventory = new HashMap<>();
 		
 	public static void runGame() {
 		Scanner scanner = new Scanner(System.in);
@@ -39,6 +39,21 @@ public class Game {
 			// Take item.
 			if (splitInput[0].equals("take") && splitInput.length > 1) {
 				takeItem(splitInput[1]);
+			}
+
+			// Open an item.
+			if (splitInput[0].equals("open") && splitInput.length > 1) {
+				System.out.println(openItem(splitInput[1]));
+			}
+
+			// Read an item.
+			if (splitInput[0].equals("read") && splitInput.length > 1) {
+				System.out.println(readItem(splitInput[1]));
+			}
+
+			// Close an item.
+			if (splitInput[0].equals("close") && splitInput.length > 1) {
+				System.out.println(closeItem(splitInput[1]));
 			}
 
 			// Use an item.
@@ -114,10 +129,14 @@ public class Game {
 	    } else if (item.isHeavy()) {
 	        return "You cannot lift the " + item.getName();
 	    } else {
-	        inventory.put(item.getName(), item);
+	        addInventoryItem(item);
 	        currentRoom.removeItem(pItemName);
 	        return "You took " + item.getName() + ".";
 	    }
+	}
+
+	public static void addInventoryItem(Item pItem) {
+		inventory.put(pItem.getName(), pItem);
 	}
 
 	public static String useItem(String pItemName) {
@@ -126,6 +145,26 @@ public class Game {
 			return "You do not have the " + pItemName + ".";
 		}
 		return item.use(currentRoom);
+	}
+
+	public static String openItem(String pItemName) {
+		Item item = getActionItem(pItemName);
+		return item == null ? "Could not find the " + pItemName + "." : item.open();
+	}
+
+	public static String readItem(String pItemName) {
+		Item item = getActionItem(pItemName);
+		return item == null ? "Could not find the " + pItemName + "." : item.read();
+	}
+
+	public static String closeItem(String pItemName) {
+		Item item = getActionItem(pItemName);
+		return item == null ? "Could not find the " + pItemName + "." : item.close();
+	}
+
+	private static Item getActionItem(String pItemName) {
+		Item item = currentRoom.getItem(pItemName);
+		return item == null ? inventory.get(pItemName) : item;
 	}
 
 	// Returns the inventory in text for the GUI.
@@ -201,9 +240,7 @@ public class Game {
 		}
 	}
 	
-	public static void main(String[] args) {
-		loadRoomDescriptions();
-		currentRoom = World.buildWorld();
-		runGame();
+	public static void main(String[] pArgs) {
+		GameGUI.main(pArgs);
 	}
 }
