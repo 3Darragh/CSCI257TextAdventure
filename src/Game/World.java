@@ -23,37 +23,50 @@ public class World {
 		stables.setExit(grounds, Direction.EAST);
 		stables.setExit(hall, Direction.SOUTH);
 		stables.setExit(spire, Direction.UP);
+		spire.lockRoom();
 		
 			// Horse item.
-		Item horse = new Item("horse", Item.g_HEAVY);
+		Horse horse = new Horse();
 		stables.addItem(horse.getName(), horse);
 		
 		// Quarters.
 		quarters.setExit(grounds, Direction.NORTH);
 		quarters.setExit(hall, Direction.WEST);
+
+			// Throne key.
+		ThroneKey thronekey = new ThroneKey(throne);
+		quarters.addItem(thronekey.getName(), thronekey);
 		
 		// Hall.
 		hall.setExit(quarters, Direction.EAST);
 		hall.setExit(stables, Direction.NORTH);
 		hall.setExit(throne, Direction.SOUTH);
+		Meal meal = new Meal();
+		hall.addItem(meal.getName(), meal);
 		
 		// Spire.
 		spire.setExit(stables, Direction.DOWN);
+
+			// Lock Spire.
+		spire.lockRoom();
 		
-		// Book item.
+			// Book item.
 		Item book = new Item("book", Item.g_NOTHEAVY);
 		throne.addItem(book.getName(), book);
 		
-		// Throne.
+		// Throne Room.
 		throne.setExit(hall, Direction.NORTH);
 		
-		// Crown item.
-		Item crown = new Item("crown", Item.g_NOTHEAVY);
+			// Crown item.
+		Crown crown = new Crown();
 		throne.addItem(crown.getName(), crown);
 		
-		// Throne item.
+			// Throne item.
 		Item throneChair = new Item("throne", Item.g_NOTHEAVY);
 		throne.addItem(throneChair.getName(), throneChair);
+
+			// Lock throne room.
+		throne.lockRoom();
 		
 		// Set starting room to living room.
 		return grounds;

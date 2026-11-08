@@ -6,8 +6,8 @@ public class Tool extends Item {
     }
 
     @Override
-    public String use(Room currentRoom) {
-        Room attic = currentRoom.getExit(Direction.UP);
+    public String use() {
+        Room attic = Game.currentRoom.getExit(Direction.UP);
 
         if (attic == null || !attic.getName().equals("Attic: ")) {
             return "You cannot use that here.";

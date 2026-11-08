@@ -32,7 +32,7 @@ public class Item implements Serializable {
 		return str;
 	}
 
-	public String use(Room currentRoom) {
+	public String use() {
 		return "You cannot use this item.";
 	}
 
@@ -48,9 +48,15 @@ public class Item implements Serializable {
 		return "You cannot read this item.";
 	}
 
-	// You can feed the meal to a specific NPC for them to give you access to a room.
-	// I know we are making NPC's later, so I'm also letting you feed the horse.
-	public String feed() {
-		return "You cannot feed this NPC.";
+	public String giveItemTo(Item recipient) {
+		return recipient.itemToGive(this);
+	}
+
+	public String itemToGive(Item offeredItem) {
+		return "The " + name + " does not accept that.";
+	}
+
+	public String pet() {
+		return "You cannot pet this item.";
 	}
 }

@@ -22,12 +22,33 @@ public class Game {
 		while(isExit == false) {
 			// Assign input, modify and trim, split input.
 			String input = scanner.nextLine().toLowerCase().trim();
+
+			String[] splitInput = input.split("\\s+", 4);
+
+			// Give an item to an NPC (the horse).
+			if (splitInput[0].equals("give")) {
+				if (splitInput.length == 4 && splitInput[2].equals("to")
+						&& !splitInput[1].isEmpty() && !splitInput[3].isEmpty()) {
+					System.out.println(giveItem(splitInput[1], splitInput[3]));
+				} 
+			}
+			
 			input = input.replaceAll("\\b(?:to|the)\\s+", "");
-			String[] splitInput = input.split("\\s+");
+			splitInput = input.split("\\s+");
 			
 			// Handle the exit command.
 			if (splitInput[0].equals("exit")) {
 				isExit = true;
+				continue;
+			}
+
+			if (splitInput[0].equals("wear") && splitInput.length > 1) {
+				System.out.println(wearItem(splitInput[1]));
+			}
+
+			if (splitInput.length > 2 && splitInput[0].equals("take")
+					&& splitInput[1].equals("off")) {
+				System.out.println(takeOffItem(splitInput[2]));
 				continue;
 			}
 			
@@ -59,6 +80,11 @@ public class Game {
 			// Use an item.
 			if (splitInput[0].equals("use") && splitInput.length > 1) {
 				System.out.println(useItem(splitInput[1]));
+			}
+
+			// Pet the horse.
+			if (splitInput[0].equals("pet") && splitInput.length > 1) {
+				System.out.println(petItem(splitInput[1]));
 			}
 			
 			// Save game.
@@ -144,7 +170,57 @@ public class Game {
 		if (item == null) {
 			return "You do not have the " + pItemName + ".";
 		}
-		return item.use(currentRoom);
+		return item.use();
+	}
+
+	public static String wearItem(String pItemName) {
+		Item item = inventory.get(pItemName);
+		if (item == null) {
+			return "You do not have the " + pItemName + ".";
+		}
+		if (!(item instanceof Crown)) {
+			return "You cannot wear the " + pItemName + ".";
+		}
+		return ((Crown) item).wear();
+	}
+
+	public static String takeOffItem(String pItemName) {
+		Item item = inventory.get(pItemName);
+		if (item == null) {
+			return "You do not have the " + pItemName + ".";
+		}
+		if (!(item instanceof Crown)) {
+			return "You cannot take off the " + pItemName + ".";
+		}
+		return ((Crown) item).takeOff();
+	}
+
+	public static String giveItem(String pItemName, String pRecipientName) {
+		Item offeredItem = inventory.get(pItemName);
+		if (offeredItem == null) {
+			return "You do not have the " + pItemName + ".";
+		}
+
+		if (offeredItem instanceof Crown
+				&& currentRoom.getName().equals("The Castle Grounds: ")) {
+			return offeredItem.itemToGive(offeredItem);
+		}
+
+		Item recipient = currentRoom.getItem(pRecipientName);
+		if (recipient == null) {
+			if (offeredItem instanceof Meal
+					&& currentRoom.getName().equals("The Stables: ")) {
+				return offeredItem.giveItemTo(null);
+			}
+			return "Could not find the " + pRecipientName + " here.";
+		}
+
+		return offeredItem.giveItemTo(recipient);
+	}
+
+	public static String petItem(String pItemName) {
+		Item item = getActionItem(pItemName);
+		return item == null ? "Could not find the " + pItemName + "." : item.pet();
 	}
 
 	public static String openItem(String pItemName) {
@@ -164,7 +240,10 @@ public class Game {
 
 	private static Item getActionItem(String pItemName) {
 		Item item = currentRoom.getItem(pItemName);
-		return item == null ? inventory.get(pItemName) : item;
+		if (item == null) {
+			return inventory.get(pItemName);
+		}
+		return item;
 	}
 
 	// Returns the inventory in text for the GUI.
@@ -182,10 +261,10 @@ public class Game {
 	    return text;
 	}
 
-	// Gets the descriptions from Descriptions.txt and adds them to roomDescriptions.
+	// Gets the descriptions from GameDescriptions.txt and adds them to roomDescriptions.
 	public static void loadRoomDescriptions() {
 		try {
-			Scanner fileScanner = new Scanner(new File("Descriptions.txt"));
+			Scanner fileScanner = new Scanner(new File("GameDescriptions.txt"));
 			fileScanner.useDelimiter("#");
 			
 			// While there is a next line.

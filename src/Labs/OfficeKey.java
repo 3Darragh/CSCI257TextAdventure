@@ -6,15 +6,15 @@ public class OfficeKey extends Item {
     }
 
     @Override
-    public String use(Room currentRoom) {
-        Room westRoom = currentRoom.getExit(Direction.WEST);
+    public String use() {
+        Room officeRoom = Game.currentRoom.getExit(Direction.WEST);
 
-        if (westRoom == null || !westRoom.getName().equals("Office: ")) {
+        if (officeRoom == null || !officeRoom.getName().equals("Office: ")) {
             return "You cannot use that here.";
         }
 
-        if (westRoom.isRoomLocked()) {
-            westRoom.unlockRoom();
+        if (officeRoom.isRoomLocked()) {
+            officeRoom.unlockRoom();
             return "You unlocked the Office.";
         }
 

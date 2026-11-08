@@ -44,7 +44,14 @@ public class GameGUI extends JFrame {
                 output.setText(Game.move(input.substring(3)));
 
             } else if (input.startsWith("take ")) {
-                output.setText(Game.takeItem(input.substring(5)));
+                if (input.startsWith("take off ")) {
+                    output.setText(Game.takeOffItem(input.substring(9)));
+                } else {
+                    output.setText(Game.takeItem(input.substring(5)));
+                }
+
+            } else if (input.startsWith("wear ")) {
+                output.setText(Game.wearItem(input.substring(5)));
 
             } else if (input.startsWith("open ")) {
                 output.setText(Game.openItem(input.substring(5)));
@@ -57,6 +64,14 @@ public class GameGUI extends JFrame {
 
             } else if (input.startsWith("use ")) {
                 output.setText(Game.useItem(input.substring(4)));
+
+            } else if (input.startsWith("give ")) {
+                String[] giveParts = input.substring(5).split("\\s+to\\s+", 2);
+                if (giveParts.length == 2 && !giveParts[0].isEmpty() && !giveParts[1].isEmpty()) {
+                    output.setText(Game.giveItem(giveParts[0], giveParts[1]));
+                }
+            } else if (input.startsWith("pet ")) {
+                output.setText(Game.petItem(input.substring(4)));
 
             } else if (input.equals("inventory")) {
                 output.setText("You checked your inventory.");

@@ -32,7 +32,7 @@ public class Item implements Serializable {
 		return str;
 	}
 
-	public String use(Room currentRoom) {
+	public String use() {
 		return "You cannot use this item.";
 	}
 

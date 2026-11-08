@@ -144,7 +144,7 @@ public class Game {
 		if (item == null) {
 			return "You do not have the " + pItemName + ".";
 		}
-		return item.use(currentRoom);
+		return item.use();
 	}
 
 	public static String openItem(String pItemName) {
