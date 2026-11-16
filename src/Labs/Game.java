@@ -12,67 +12,51 @@ public class Game {
 	public static HashMap<String, String> roomDescriptions = new HashMap<>();
 	public static Room currentRoom;
 	public static HashMap<String, Item> inventory = new HashMap<>();
+	public static String state = "";
+	public static boolean isRunning = true;
 		
-	public static void runGame() {
-		Scanner scanner = new Scanner(System.in);
-	
-		boolean isExit = false;
-		
-		// While game is running.
-		while(isExit == false) {
-			// Assign input, modify and trim, split input.
-			String input = scanner.nextLine().toLowerCase().trim();
-			input = input.replaceAll("\\b(?:to|the)\\s+", "");
-			String[] splitInput = input.split("\\s+");
-			
-			// Handle the exit command.
-			if (splitInput[0].equals("exit")) {
-				isExit = true;
-				continue;
-			}
-			
-			// Move in direction.
-			if (splitInput[0].equals("go") && splitInput.length > 1) {
-				move(splitInput[1]);
-			}
-			
-			// Take item.
-			if (splitInput[0].equals("take") && splitInput.length > 1) {
-				takeItem(splitInput[1]);
-			}
-
-			// Open an item.
-			if (splitInput[0].equals("open") && splitInput.length > 1) {
-				System.out.println(openItem(splitInput[1]));
-			}
-
-			// Read an item.
-			if (splitInput[0].equals("read") && splitInput.length > 1) {
-				System.out.println(readItem(splitInput[1]));
-			}
-
-			// Close an item.
-			if (splitInput[0].equals("close") && splitInput.length > 1) {
-				System.out.println(closeItem(splitInput[1]));
-			}
-
-			// Use an item.
-			if (splitInput[0].equals("use") && splitInput.length > 1) {
-				System.out.println(useItem(splitInput[1]));
-			}
-			
-			// Save game.
-			if (splitInput[0].equals("save")) {
-				System.out.println(saveGame());
-			}
-			
-			// Load game.
-			if (splitInput[0].equals("load")) {
-				System.out.println(loadGame());
-			}
+	public static void runGame(String pInput) {
+		String input = pInput.toLowerCase().trim();
+		input = input.replaceAll("\\b(?:to|the)\\s+", "");
+		if (input.isEmpty()) {
+			state = "";
+			return;
 		}
-		
-		scanner.close();
+
+		String[] splitInput = input.split("\\s+");
+		String action = splitInput[0];
+		String argument = splitInput.length > 1 ? splitInput[1] : "";
+
+		if (argument.isEmpty()
+				&& !action.equals("save")
+				&& !action.equals("load")
+				&& !action.equals("inventory")
+				&& !action.equals("exit")) {
+			state = "All commands require an argument.";
+			return;
+		}
+
+		switch (action) {
+			case "exit" -> {
+				isRunning = false;
+				state = "Goodbye.";
+			}
+			case "go" -> state = move(argument);
+			case "take" -> state = takeItem(argument);
+			case "open" -> state = openItem(argument);
+			case "read" -> state = readItem(argument);
+			case "close" -> state = closeItem(argument);
+			case "talk" -> state = talkTo(argument);
+			case "use" -> state = useItem(argument);
+			case "inventory" -> state = getInventoryText();
+			case "save" -> state = saveGame();
+			case "load" -> state = loadGame();
+			default -> state = "Unknown command.";
+		}
+	}
+
+	public static void print(Object pObject) {
+		System.out.println(pObject);
 	}
 	
 	// Move in direction.
@@ -80,32 +64,13 @@ public class Game {
 		Direction direction;
 		
 		switch(pDirection) {
-		case "east":
-			direction = Direction.EAST;
-			break;
-		
-		case "west":
-			direction = Direction.WEST;
-			break;
-		
-		case "north":
-			direction = Direction.NORTH;
-			break;
-		
-		case "south":
-			direction = Direction.SOUTH;
-			break;
-		
-		case "up":
-			direction = Direction.UP;
-			break;
-		
-		case "down":
-			direction = Direction.DOWN;
-			break;
-		
-		default:
-			return "";
+			case "east" -> direction = Direction.EAST;
+			case "west" -> direction = Direction.WEST;
+			case "north" -> direction = Direction.NORTH;
+			case "south" -> direction = Direction.SOUTH;
+			case "up" -> direction = Direction.UP;
+			case "down" -> direction = Direction.DOWN;
+			default -> direction = null;
 		}
 		
 	    if (currentRoom.getExit(direction) != null) {
@@ -160,6 +125,11 @@ public class Game {
 	public static String closeItem(String pItemName) {
 		Item item = getActionItem(pItemName);
 		return item == null ? "Could not find the " + pItemName + "." : item.close();
+	}
+
+	public static String talkTo(String pNPC) {
+		NPC npc = currentRoom.getNPC(pNPC);
+		return npc == null ? "Could not find " + pNPC + " in " + currentRoom.getName() + "." : npc.talk();
 	}
 
 	private static Item getActionItem(String pItemName) {

@@ -1,18 +1,17 @@
 package Labs;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.io.Serializable;
 
 public class Room implements Serializable {
 
 	private String name;
-	private ArrayList<Room> roomList = new ArrayList<Room>();
+	private ArrayList<Room> roomList = new ArrayList<>(6);
 	private boolean isLocked = false;
+	private HashMap<String, Item> itemList = new HashMap<>();
+	private HashMap<String, NPC> NPCList = new HashMap<>();
 
-	public HashMap<String, Item> itemList = new HashMap<>();
-
-	
 	public Room(String pName) {
 		name = pName;
 		roomList = new ArrayList<>();
@@ -51,9 +50,22 @@ public class Room implements Serializable {
 	public Item getItem(String pString) {
 		return itemList.get(pString);
 	}
+
+	public HashMap<String, Item> getItemList(String pString) {
+		return itemList;
+	}
 	
 	public void addItem(String pString, Item pItem) {
 		itemList.put(pString, pItem);
+	}
+
+	
+	public NPC getNPC(String pName) {
+    	return NPCList.get(pName);
+	}
+
+	public void addNPC(String pName, NPC pNPC) {
+		NPCList.put(pName, pNPC);
 	}
 	
 	public void removeItem(String pString) {
@@ -76,6 +88,7 @@ public class Room implements Serializable {
 		isLocked = false;
 	}
 	
+	@Override
 	public String toString() {
 		String str = getName() + getDescription();
 		return str;

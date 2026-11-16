@@ -48,6 +48,10 @@ public class Item implements Serializable {
 		return "You cannot read this item.";
 	}
 
+	public String wear() {
+		return "You cannot wear this item.";
+	}
+
 	public String giveItemTo(Item recipient) {
 		return recipient.itemToGive(this);
 	}

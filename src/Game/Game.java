@@ -12,93 +12,57 @@ public class Game {
 	public static HashMap<String, String> roomDescriptions = new HashMap<>();
 	public static Room currentRoom;
 	public static HashMap<String, Item> inventory = new HashMap<>();
+	public static String state = "";
+	public static boolean isRunning = true;
 		
-	public static void runGame() {
-		Scanner scanner = new Scanner(System.in);
-	
-		boolean isExit = false;
-		
-		// While game is running.
-		while(isExit == false) {
-			// Assign input, modify and trim, split input.
-			String input = scanner.nextLine().toLowerCase().trim();
-
-			String[] splitInput = input.split("\\s+", 4);
-
-			// Give an item to an NPC (the horse).
-			if (splitInput[0].equals("give")) {
-				if (splitInput.length == 4 && splitInput[2].equals("to")
-						&& !splitInput[1].isEmpty() && !splitInput[3].isEmpty()) {
-					System.out.println(giveItem(splitInput[1], splitInput[3]));
-				} 
-			}
-			
-			input = input.replaceAll("\\b(?:to|the)\\s+", "");
-			splitInput = input.split("\\s+");
-			
-			// Handle the exit command.
-			if (splitInput[0].equals("exit")) {
-				isExit = true;
-				continue;
-			}
-
-			if (splitInput[0].equals("wear") && splitInput.length > 1) {
-				System.out.println(wearItem(splitInput[1]));
-			}
-
-			if (splitInput.length > 2 && splitInput[0].equals("take")
-					&& splitInput[1].equals("off")) {
-				System.out.println(takeOffItem(splitInput[2]));
-				continue;
-			}
-			
-			// Move in direction.
-			if (splitInput[0].equals("go") && splitInput.length > 1) {
-				move(splitInput[1]);
-			}
-			
-			// Take item.
-			if (splitInput[0].equals("take") && splitInput.length > 1) {
-				takeItem(splitInput[1]);
-			}
-
-			// Open an item.
-			if (splitInput[0].equals("open") && splitInput.length > 1) {
-				System.out.println(openItem(splitInput[1]));
-			}
-
-			// Read an item.
-			if (splitInput[0].equals("read") && splitInput.length > 1) {
-				System.out.println(readItem(splitInput[1]));
-			}
-
-			// Close an item.
-			if (splitInput[0].equals("close") && splitInput.length > 1) {
-				System.out.println(closeItem(splitInput[1]));
-			}
-
-			// Use an item.
-			if (splitInput[0].equals("use") && splitInput.length > 1) {
-				System.out.println(useItem(splitInput[1]));
-			}
-
-			// Pet the horse.
-			if (splitInput[0].equals("pet") && splitInput.length > 1) {
-				System.out.println(petItem(splitInput[1]));
-			}
-			
-			// Save game.
-			if (splitInput[0].equals("save")) {
-				System.out.println(saveGame());
-			}
-			
-			// Load game.
-			if (splitInput[0].equals("load")) {
-				System.out.println(loadGame());
-			}
+	public static void runGame(String pInput) {
+		String input = pInput.toLowerCase().trim();
+		input = input.replaceAll("\\bthe\\s+", "");
+		input = input.replaceFirst("^(go|talk)\\s+to\\s+", "$1 ");
+		input = input.replaceFirst("^take\\s+off\\b", "takeoff");
+		if (input.isEmpty()) {
+			state = "";
+			return;
 		}
-		
-		scanner.close();
+
+		String[] splitInput = input.split("\\s+");
+		String action = splitInput[0];
+		String argument = splitInput.length > 1 ? splitInput[1] : "";
+
+		if (argument.isEmpty()
+				&& !action.equals("save")
+				&& !action.equals("load")
+				&& !action.equals("inventory")
+				&& !action.equals("exit")) {
+			state = "All commands require an argument.";
+			return;
+		}
+
+		switch (action) {
+			case "exit" -> {
+				isRunning = false;
+				state = "Goodbye.";
+			}
+			case "go" -> state = move(argument);
+			case "take" -> state = takeItem(argument);
+			case "takeoff" -> state = takeOffItem(argument);
+			case "open" -> state = openItem(argument);
+			case "read" -> state = readItem(argument);
+			case "close" -> state = closeItem(argument);
+			case "talk" -> state = talkTo(argument);
+			case "use" -> state = useItem(argument);
+			case "pet" -> state = petItem(argument);
+			case "wear" -> state = wearItem(argument);
+			case "give" -> state = giveItemFromCommand(input);
+			case "inventory" -> state = getInventoryText();
+			case "save" -> state = saveGame();
+			case "load" -> state = loadGame();
+			default -> state = "Unknown command.";
+		}
+	}
+
+	public static void print(Object pObject) {
+		System.out.println(pObject);
 	}
 	
 	// Move in direction.
@@ -106,32 +70,13 @@ public class Game {
 		Direction direction;
 		
 		switch(pDirection) {
-		case "east":
-			direction = Direction.EAST;
-			break;
-		
-		case "west":
-			direction = Direction.WEST;
-			break;
-		
-		case "north":
-			direction = Direction.NORTH;
-			break;
-		
-		case "south":
-			direction = Direction.SOUTH;
-			break;
-		
-		case "up":
-			direction = Direction.UP;
-			break;
-		
-		case "down":
-			direction = Direction.DOWN;
-			break;
-		
-		default:
-			return "";
+			case "east" -> direction = Direction.EAST;
+			case "west" -> direction = Direction.WEST;
+			case "north" -> direction = Direction.NORTH;
+			case "south" -> direction = Direction.SOUTH;
+			case "up" -> direction = Direction.UP;
+			case "down" -> direction = Direction.DOWN;
+			default -> direction = null;
 		}
 		
 	    if (currentRoom.getExit(direction) != null) {
@@ -178,10 +123,7 @@ public class Game {
 		if (item == null) {
 			return "You do not have the " + pItemName + ".";
 		}
-		if (!(item instanceof Crown)) {
-			return "You cannot wear the " + pItemName + ".";
-		}
-		return ((Crown) item).wear();
+		return item.wear();
 	}
 
 	public static String takeOffItem(String pItemName) {
@@ -189,16 +131,19 @@ public class Game {
 		if (item == null) {
 			return "You do not have the " + pItemName + ".";
 		}
-		if (!(item instanceof Crown)) {
-			return "You cannot take off the " + pItemName + ".";
+		if (item instanceof Crown crown) {
+			return crown.takeOff();
 		}
-		return ((Crown) item).takeOff();
+		return "You cannot take off the " + pItemName + ".";
 	}
 
 	public static String giveItem(String pItemName, String pRecipientName) {
 		Item offeredItem = inventory.get(pItemName);
 		if (offeredItem == null) {
 			return "You do not have the " + pItemName + ".";
+		}
+		if (currentRoom == null) {
+			return "Could not give an item without a current room.";
 		}
 
 		if (offeredItem instanceof Crown
@@ -207,20 +152,35 @@ public class Game {
 		}
 
 		Item recipient = currentRoom.getItem(pRecipientName);
-		if (recipient == null) {
-			if (offeredItem instanceof Meal
-					&& currentRoom.getName().equals("The Stables: ")) {
-				return offeredItem.giveItemTo(null);
-			}
-			return "Could not find the " + pRecipientName + " here.";
+		if (recipient != null) {
+			return offeredItem.giveItemTo(recipient);
 		}
 
-		return offeredItem.giveItemTo(recipient);
+		NPC npc = currentRoom.getNPC(pRecipientName);
+		if (offeredItem instanceof Meal
+				&& pRecipientName.equals("guard")
+				&& currentRoom.getName().equals("The Stables: ")) {
+			return offeredItem.giveItemTo(null);
+		}
+		if (npc != null) {
+			return "The " + npc.getName() + " does not accept that.";
+		}
+
+		return "Could not find the " + pRecipientName + " here.";
 	}
 
-	public static String petItem(String pItemName) {
-		Item item = getActionItem(pItemName);
-		return item == null ? "Could not find the " + pItemName + "." : item.pet();
+	private static String giveItemFromCommand(String pInput) {
+		int separatorIndex = pInput.indexOf(" to ");
+		if (separatorIndex < "give ".length()) {
+			return "Use: give <item> to <recipient>.";
+		}
+
+		String itemName = pInput.substring("give ".length(), separatorIndex).trim();
+		String recipientName = pInput.substring(separatorIndex + " to ".length()).trim();
+		if (itemName.isEmpty() || recipientName.isEmpty()) {
+			return "Use: give <item> to <recipient>.";
+		}
+		return giveItem(itemName, recipientName);
 	}
 
 	public static String openItem(String pItemName) {
@@ -236,6 +196,16 @@ public class Game {
 	public static String closeItem(String pItemName) {
 		Item item = getActionItem(pItemName);
 		return item == null ? "Could not find the " + pItemName + "." : item.close();
+	}
+
+	public static String talkTo(String pNPC) {
+		NPC npc = currentRoom.getNPC(pNPC);
+		return npc == null ? "Could not find " + pNPC + " in " + currentRoom.getName() + "." : npc.talk();
+	}
+
+	public static String petItem(String pItemName) {
+		Item item = getActionItem(pItemName);
+		return item == null ? "Could not find the " + pItemName + "." : item.pet();
 	}
 
 	private static Item getActionItem(String pItemName) {
@@ -261,7 +231,7 @@ public class Game {
 	    return text;
 	}
 
-	// Gets the descriptions from GameDescriptions.txt and adds them to roomDescriptions.
+	// Gets the descriptions from Descriptions.txt and adds them to roomDescriptions.
 	public static void loadRoomDescriptions() {
 		try {
 			Scanner fileScanner = new Scanner(new File("GameDescriptions.txt"));

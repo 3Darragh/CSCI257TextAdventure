@@ -3,88 +3,105 @@ package Game;
 import java.util.ArrayList;
 
 public class World {
+	private static Room grounds;
+	private static Room stables;
+	private static Room quarters;
+	private static Room hall;
+	private static Room spire;
+	private static Room throne;
+
+	public static ArrayList<Room> roomList;
+
+	public World() {
+		grounds = new Room("The Castle Grounds: ");
+		stables = new Room("The Stables: ");
+		quarters = new Room("The Living Quarters: ");
+		hall = new Room("The Dining Hall: ");
+		spire = new Room("The Spire: ");
+		throne = new Room("The Throne Room: ");
+
+		roomList = new ArrayList<>(6);
+		roomList.add(grounds);
+		roomList.add(stables);
+		roomList.add(quarters);
+		roomList.add(hall);
+		roomList.add(spire);
+		roomList.add(throne);
+	}
 	
 	public static Room buildWorld() {
-		
-		Room grounds = new Room("The Castle Grounds: ");
-		Room stables = new Room("The Stables: ");
-		Room quarters = new Room("The Living Quarters: ");
-		Room hall = new Room("The Dining Hall: ");
-		Room spire = new Room(	"The Spire: ");
-		Room throne = new Room(	"The Throne Room: ");
+		new World();
 		
 		// The Grounds.
+		// ----- Set Exits.
 		grounds.setExit(stables, Direction.WEST);
 		grounds.setExit(quarters, Direction.SOUTH);
 		
 		// Stables.
-
-			// Set Exits.
+		// ----- Set Exits.
 		stables.setExit(grounds, Direction.EAST);
 		stables.setExit(hall, Direction.SOUTH);
 		stables.setExit(spire, Direction.UP);
-		spire.lockRoom();
 		
-			// Horse item.
+		// ----- Create Items.
 		Horse horse = new Horse();
+
+		// ----- Add Items.
 		stables.addItem(horse.getName(), horse);
 		
+		// ----- Set Lock.
+		spire.lockRoom();
+		
 		// Quarters.
+		// ----- Set Exits.
 		quarters.setExit(grounds, Direction.NORTH);
 		quarters.setExit(hall, Direction.WEST);
 
-			// Throne key.
+		// ----- Create Items.
 		ThroneKey thronekey = new ThroneKey(throne);
+
+		// ----- Add Items.
 		quarters.addItem(thronekey.getName(), thronekey);
 		
 		// Hall.
 		hall.setExit(quarters, Direction.EAST);
 		hall.setExit(stables, Direction.NORTH);
 		hall.setExit(throne, Direction.SOUTH);
+
+		// ----- Create Items.
 		Meal meal = new Meal();
+
+		// ----- Add Items.
 		hall.addItem(meal.getName(), meal);
 		
 		// Spire.
+		// ----- Set Exits.
 		spire.setExit(stables, Direction.DOWN);
 
-			// Lock Spire.
+		// ----- Create Items.
+		Item book = new Item("book", Item.g_NOTHEAVY);
+
+		// ----- Add Items.
+		throne.addItem(book.getName(), book);
+
+		
 		spire.lockRoom();
 		
-			// Book item.
-		Item book = new Item("book", Item.g_NOTHEAVY);
-		throne.addItem(book.getName(), book);
-		
 		// Throne Room.
+		// ----- Set Exits.
 		throne.setExit(hall, Direction.NORTH);
 		
-			// Crown item.
+		// ----- Create Items.
 		Crown crown = new Crown();
 		throne.addItem(crown.getName(), crown);
 		
-			// Throne item.
+		// ----- Add Items.
 		Item throneChair = new Item("throne", Item.g_NOTHEAVY);
 		throne.addItem(throneChair.getName(), throneChair);
 
-			// Lock throne room.
+		// ----- Set Lock.
 		throne.lockRoom();
 		
-		// Set starting room to living room.
 		return grounds;
-	}
-	
-	// Puts all rooms and their properties into one arrayList.
-	public static ArrayList<Room> createRoomArrayList() {
-		ArrayList<Room> roomArrayList = new ArrayList<Room>();
-		Room world = buildWorld();
-		
-		// Adds them to the list.
-		roomArrayList.add(world); // Grounds
-		roomArrayList.add(world.getExit(Direction.WEST)); // Stables
-		roomArrayList.add(world.getExit(Direction.SOUTH)); // Quarters
-		roomArrayList.add(world.getExit(Direction.WEST).getExit(Direction.SOUTH)); // Hall
-		roomArrayList.add(world.getExit(Direction.WEST).getExit(Direction.SOUTH).getExit(Direction.SOUTH)); // Throne
-		roomArrayList.add(world.getExit(Direction.WEST).getExit(Direction.UP)); // Spire
-
-		return roomArrayList;
 	}
 }
